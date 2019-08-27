@@ -1,6 +1,6 @@
 ---
 title: "Day 1 mini-project"
-author: "By Anonymous Analyst Extraordinaire"
+author: "Suzana Iacob & Asher Wright"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -44,76 +44,51 @@ listings <- clean_prices(listings)
 calendar <- clean_prices(calendar)
 ```
 
-# A First Tab
+# Top 3 Sunniest AirBnb Spots in Boston Area
 
 Column {data-width=650}
 -----------------------------------------------------------------------
 
-### A map! 
+### A map of the sunny spots in the area! 
 
 ```{r box_1}
-
 library(ggmap)
+sunny_listings <- listings %>%
+  mutate(is_sunny = (grepl('sunny', summary))) %>%
+  filter(is_sunny)
 
-boston_coords <- c(left   = -71.1289, 
+# boston_coords <- c(left = -71.151, bottom = 42.3901, right = -71.0189, top = 42.3901)
+
+boston_coords <- c(left   = -71.1510, 
 				   bottom = 42.3201, 
 				   right  = -71.0189, 
 				   top    = 42.3701)
 
-basemap <- get_map(location = boston_coords,
-				maptype = 'terrain')
+basemap <- get_map(location = boston_coords)
 
-ggmap(basemap) + 
-	geom_point(aes(x = longitude, y = latitude), 
-			   data = listings, 
-			   size = .5)
+# The ggmap with basemap is just the same as any other ggplot object, with pre-built aesthetics: lon on the x axis and lat on the y axis. Let's make a plot of all the listings in our data set:
+
+ggmap(basemap) +
+  geom_point(aes(x = longitude, y = latitude, color=neighbourhood), data = sunny_listings, size = 1)
 ```
 
 Column {data-width=350}
 -----------------------------------------------------------------------
+### Sunny Neighbourhoods! 
 
-### Box 2
-
-Frequently, visualization for decision-makers are most useful when accompanied by analysis, interpretation, and sometimes a recommendation by the analyst. Feel free to fill in your own commentary on your visualizations in this box or the one below. You can leave the `R` code chunk blank for your commentary box. 
-
-```{r box_2}
-
-```
-
-### A different visualization! 
+Check out the most sunny neighbourhoods in the Boston Area! We explored which AirBnb spots were sunny. You'll see those on the (cut-off) map to the left! Notice the different clumps in different neighbourhoods.
 
 ```{r box_3}
 # Put the code for a supporting visualization here. This visualization should add context and nuance, but expect the main visualization to convey the bulk of your message. 
 
-# This is not a good visualization -- always remember to include titles and legends. Make yours better! 
+neighbourhood_count <- sunny_listings %>%
+  group_by(neighbourhood) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
 
-neighbourhood_lookup <- listings %>% 
-	select(id, neighbourhood)
-
-calendar %>% 
-	left_join(neighbourhood_lookup, by = c('listing_id' = 'id')) %>% 
-	group_by(neighbourhood, date) %>% 
-	summarise(price = mean(price), n = n()) %>% 
-	filter(n > 100) %>%
-	ggplot() +
-	aes(x = date, y = price, color = neighbourhood) + 
-	geom_line() + 
-	guides(color = FALSE)
+# head(neighbourhood_count)
+library(knitr)
+kable(head(neighbourhood_count, 10), caption = 'Sunny Neighbourhoods')
 ```
-
-
-# A Second Tab
-
-
-Column {data-width=650}
------------------------------------------------------------------------
-
-### Box 1
-
-Your dashboard is allowed to have multiple tabs! Only use it if you need it. 
-
-Column {data-width=350}
------------------------------------------------------------------------
-
-### Box 2
+We recommend going to Alliston-Brighton, Dorchester, and Jamaica Plain! You should only go to the sunniest places possible. Check out some AirBnB listings there.
 
