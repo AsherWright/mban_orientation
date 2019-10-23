@@ -9,7 +9,7 @@ source("../2_data_science/code/clean_prices.R")
 # These parameters indicate the criteria we will use to filter the listings
 min_score <- 90
 min_reviews <- 5
-allowed_neighbourhoods <- c("Downtown","Back Bay","Chinatown")
+allowed_neighbourhoods <- c("Downtown","Back Bay","Chinatown", "West End", "Beacon Hill", "Allston-Brighton")
 
 # These parameters describe the dates and length of stay for which we want to check availibility.
 nights <- 3
